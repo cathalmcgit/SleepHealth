@@ -4,6 +4,9 @@
 ###												
 ############################################################################
 
+### !!!!!! Make sure to PULL from the repository before making any updates !!!!! #####
+
+
 library(tidyverse)
 library(ggplot2)
 
@@ -19,7 +22,6 @@ length(unique(sleep_health_orig$Person.ID))
 
 # Count missing values in each variable
 colSums(is.na(sleep_health_orig))
-## No missing values
 
 # Creating a data set with duplicate rows removed --------------------------
 
@@ -42,7 +44,6 @@ sleep_health <- sleep_health %>%
 # Will become two numeric variables
 sleep_health <- sleep_health %>% 
   separate(col = Blood.Pressure,into = c("Systolic_BP", "Diastolic_BP"),sep = "/",convert = TRUE)
-
 
 # doing some quick checks on imported data
 head(sleep_health) # View the first few rows
