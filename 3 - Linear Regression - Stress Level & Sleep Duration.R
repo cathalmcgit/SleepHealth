@@ -21,6 +21,30 @@ summary(sleep_health$Stress.Level)
 summary(sleep_health$Sleep.Duration)
 
 
+##### Q3 possible input - Chihiro ###########
+
+# summary statistics of sleep duration variable 
+summary(sleep_health$Sleep.Duration) 
+
+# summary statistics of stress level variable 
+summary(sleep_health$Stress.Level) 
+
+# Creating sleep duration vs stress level category boxplot 
+n_levels <- length(unique(sleep_health$Stress.Level)) 
+
+ggplot(sleep_health, aes(x = factor(Stress.Level), y = Sleep.Duration, 
+                         fill = factor(Stress.Level))) + 
+  geom_boxplot() + 
+  scale_fill_manual(values = colorRampPalette(c("limegreen", "yellow", "red"), space = "Lab")(n_levels)) + 
+  labs(title = "Sleep Duration by Stress Level", 
+       x = "Stress Level", y = "Sleep Duration (hours per day)") + 
+  theme_minimal(base_size = 14) + 
+  theme(legend.position = "none") 
+
+# Save image
+ggsave("images/sleep_duration_and_stress_level_boxplot.svg", width = 8, height = 6, dpi = 300)
+
+###############################################################################
 
 # Bar chart of stress level -----------------------------------------------
 
@@ -54,3 +78,7 @@ ggplot(sleep_health, aes(x = Sleep.Duration)) +
 
 # Save image
 ggsave("images/sleep_duration_histogram.svg", width = 8, height = 6, dpi = 300)
+
+
+
+

@@ -111,3 +111,21 @@ bmi_disorder_table
 percent_ctable <- round(prop.table(bmi_disorder_table[-nrow(bmi_disorder_table), -ncol(bmi_disorder_table)], 1) * 100, 1)
 
 percent_ctable
+
+
+##### Q2 – chi-squared test  - Chihiro #############
+
+# viewing the contingency table ahead of performing a chi-squared test 
+table(sleep_health$BMI.Category, sleep_health$Sleep.Disorder) 
+
+# Create a new combined variable 
+sleep_health$BMI_grouped <- ifelse(sleep_health$BMI.Category %in% c("Overweight", "Obese"), 
+                                   "Overweight/Obese", "Normal") 
+
+# viewing the contingency table ahead of performing a chi-squared test 
+table(sleep_health$BMI_grouped, sleep_health$Sleep.Disorder) 
+
+# Perform chi-squared test of independence 
+chisq.test(sleep_health$BMI_grouped, sleep_health$Sleep.Disorder, correct = FALSE) 
+
+##############################################################
