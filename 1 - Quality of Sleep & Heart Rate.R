@@ -40,7 +40,7 @@ ggplot(sleep_health, aes(x = sleep_quality, y = Heart.Rate)) +
   theme_minimal(base_size = 14) 
 
 # Save image
-ggsave("images/heart_rate_and_sleep_quality.svg", width = 8, height = 6, dpi = 300)
+ggsave("images/heart_rate_and_sleep_quality_boxplot.svg", width = 8, height = 6, dpi = 300)
 
 # Conducting Shapiro Wilk Test to test for normality 
 by(sleep_health$Heart.Rate, sleep_health$sleep_quality, shapiro.test) 
@@ -54,5 +54,8 @@ ggplot(sleep_health, aes(sample = Heart.Rate)) +
        x = "Theoretical Quantiles", 
        y = "Sample Quantiles") + 
   theme_minimal(base_size = 14) 
+
+# Save image
+ggsave("images/heart_rate_and_sleep_quality_QQplot.svg", width = 8, height = 6, dpi = 300)
 
 ###################################################################
