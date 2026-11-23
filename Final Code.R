@@ -1,20 +1,19 @@
-################################################################################
-###
-###              Group 11 - Sleep Health Data Set Analysis		 
-###
-################################################################################
+#*******************************************************************************
+#
+#  Group 11 - Sleep Health Data Set Analysis	----
+#  See Document Outline (☰) for chapters    ->>>>>
+#
+#*******************************************************************************
 
-### Load libraries
+## Load Libraries ----
 library(car)
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
 
-################################################################################
-###
-###               Importing, Cleaning & Preparing Data
-###
-################################################################################
+#*******************************************************************************
+
+## Importing, Cleaning & Preparing Data ----
 
 # Import CSV file
 sleep_health_original <- read.csv("data/SleepHealth.csv")
@@ -34,7 +33,7 @@ length(unique(sleep_health_original$Person.ID))
 # Count missing values in each variable
 colSums(is.na(sleep_health_original))
 
-### Creating a data set with duplicate rows removed ----------------------------
+### Creating a data set with duplicate rows removed
 
 sleep_health <- sleep_health_original %>%  
   distinct(across(-Person.ID), .keep_all = TRUE)
@@ -80,74 +79,39 @@ summary(sleep_health)  ## Overview of data types etc
 
 save(sleep_health, file = 'data/SleepHealth_Updated.rda') 
 
+#*******************************************************************************
+#
+#  Question 1	- Is there a relationship between quality of sleep and heart rate?	----
+#
+#*******************************************************************************
 
-################################################################################
-###
-###                            Question 1
-###     Is there a relationship between quality of sleep and heart rate?	
-###
-################################################################################
-
-### Exploratory Data Analysis of Sleep Quality and Heart Rate variables --------
-
-# summary statistics of heart rate (bpm) variable 
-summary(sleep_health$Heart.Rate) 
-
-# Frequency count for each sleep quality category 
-count(sleep_health, sleep_quality) 
-
-# Creating heart rate vs quality of sleep category boxplot 
-ggplot(sleep_health, aes(x = sleep_quality, y = Heart.Rate)) + 
-  geom_boxplot(fill = "lightgreen") + 
-  labs(title = "Heart rate by sleep quality", 
-       x = "Sleep Quality", y = "Heart Rate (bpm)") + 
-  theme_minimal(base_size = 14) 
-
-# Save image
-ggsave("images/heart_rate_and_sleep_quality_boxplot.svg", width = 8, height = 6, dpi = 300)
-
-# Conducting Shapiro Wilk Test to test for normality 
-by(sleep_health$Heart.Rate, sleep_health$sleep_quality, shapiro.test) 
-
-# Generate QQ plot using ggplot 
-ggplot(sleep_health, aes(sample = Heart.Rate)) + 
-  stat_qq(size = 2) + 
-  stat_qq_line(color = "blue", linetype = "dashed", lwd = 1.1) + 
-  facet_wrap(~ sleep_quality) + 
-  labs(title = "Normal QQ Plot of Heart Rate by Sleep Quality", 
-       x = "Theoretical Quantiles", 
-       y = "Sample Quantiles") + 
-  theme_minimal(base_size = 14) 
-
-# Save image
-ggsave("images/heart_rate_and_sleep_quality_QQplot.svg", width = 8, height = 6, dpi = 300)
+## Q1 - Exploratory Data Analysis ----
 
 
-### ANOVA Hypothesis Testing  --------------------------------------------------
+
+## Q1 - Hypothesis Testing (ANOVA) ----
 
 # H0: mean heart rate is equal across sleep quality groups
 # H1: at least one group mean differs
 
-################################################################################
-###
-###                            Question 2
-###     Is there a relationship between sleep disorders and BMI category?		
-###
-################################################################################
 
-### Exploratory Data Analysis of Sleep Disorder and BMI Category variables -----
+#*******************************************************************************
+#
+#  Question 2	- Is there a relationship between sleep disorders and BMI category?	----
+#
+#*******************************************************************************
+
+## Q2 - Exploratory Data Analysis ----
+
+## Q2 - Hypothesis Testing (Chi-Squared) ----
 
 
-### Chi-Squared Hypothesis Testing ---------------------------------------------
+#*******************************************************************************
+#
+#  Question 3	- Controlling for other factors, can decreasing your stress level increase your sleep duration?	----
+#
+#*******************************************************************************
 
-################################################################################
-###
-###                            Question 3
-###     Controlling for other factors, can decreasing your stress level 
-###                  increase your sleep duration?	
-###
-################################################################################
+## Q3 - Exploratory Data Analysis ----
 
-### Exploratory Data Analysis of
-
-### Linear Regression
+## Q3 - Linear Regression ----
