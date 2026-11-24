@@ -89,6 +89,7 @@ load('data/SleepHealth_Updated.rda')
 library(broom)
 library(car)
 library(lmtest)
+library(ggplot2)
 
 rq3_vars <- sleep_health %>%  select(Sleep.Duration, Stress.Level, Physical.Activity.Level, Age)
 
@@ -124,6 +125,8 @@ p_rq3_scatter <- ggplot(sleep_health, aes(x = Stress.Level, y = Sleep.Duration, 
     x = "Stress Level (scale 1-10)", y = "Sleep Duration (hours)", colour = "Gender"
   )
 print(p_rq3_scatter)
+
+ggsave("images/Q3_scatter.png", width = 8, height = 6, dpi = 300)
 
 ####Correlation test for the primary predictor 
 #  H0: rho = 0 (no linear association)   H1: rho != 0
@@ -181,6 +184,8 @@ p_rq3_qq <- ggplot(diag_df, aes(sample = .std.resid)) +
        x = "Theoretical quantiles", y = "Standardised residuals")
 print(p_rq3_qq)
 
+ggsave("images/Q3_qq.png", width = 8, height = 6, dpi = 300)
+
 p_rq3_hist <- ggplot(diag_df, aes(x = .resid)) +
   geom_histogram(aes(y = after_stat(density)), bins = 25,
                  fill = "#AED6F1", colour = "white") +
@@ -191,6 +196,7 @@ p_rq3_hist <- ggplot(diag_df, aes(x = .resid)) +
        x = "Residual (hours)", y = "Density")
 print(p_rq3_hist)
 
+ggsave("images/Q3_hist.png", width = 8, height = 6, dpi = 300)
 
 # ## H0: residual variance is constant.
 rq3_bp <- bptest(model)
@@ -207,6 +213,8 @@ p_rq3_resfit <- ggplot(diag_df, aes(x = .fitted, y = .resid, colour = Gender)) +
                           rq3_bp$statistic, rq3_bp$parameter, rq3_bp$p.value),
        x = "Fitted Sleep Duration (hours)", y = "Residual (hours)", colour = "Gender")
 print(p_rq3_resfit)
+
+ggsave("images/Q3_fit.png", width = 8, height = 6, dpi = 300)
 
 # Supporting checks: influential points, and heteroscedasticity-robust (HC3)
 # standard errors, which give valid inference when the variance is NOT constant.

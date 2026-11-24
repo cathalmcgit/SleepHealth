@@ -5,7 +5,7 @@
 #
 #*******************************************************************************
 
-## Load Libraries ----
+# Load Libraries ----
 library(car)
 library(dplyr)
 library(ggplot2)
@@ -13,7 +13,9 @@ library(tidyverse)
 
 #*******************************************************************************
 
-## Importing, Cleaning & Preparing Data ----
+# Importing, Cleaning & Preparing Data ----
+
+### Slide 1 ----
 
 # Import CSV file
 sleep_health_original <- read.csv("data/SleepHealth.csv")
