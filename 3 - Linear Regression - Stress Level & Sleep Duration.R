@@ -45,6 +45,21 @@ ggplot(sleep_health, aes(x = factor(Stress.Level), y = Sleep.Duration,
 # Save image
 ggsave("images/sleep_duration_and_stress_level_boxplot.svg", width = 8, height = 6, dpi = 300)
 
+# Load the ggplot2 package
+library(ggplot2)
+
+# Generate QQ plot using ggplot for Sleep Duration
+ggplot(sleep_health, aes(sample = Sleep.Duration)) +
+  stat_qq(size = 2) +
+  stat_qq_line(color = "blue", linetype = "dashed", lwd = 1.1) +
+  labs(title = "Normal QQ Plot of Sleep Duration",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles") +
+  theme_minimal(base_size = 14)
+
+# Performing Shapiro-Wilk test for normality for Sleed Duration
+shapiro.test(sleep_health$Sleep.Duration)
+
 ###############################################################################
 
 # Bar chart of stress level -----------------------------------------------
@@ -227,3 +242,5 @@ print(rq3_robust)
 ##############################################################################
 
 ###############################################################################
+
+
