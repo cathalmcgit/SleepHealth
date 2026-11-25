@@ -90,8 +90,8 @@ bmi_bar_chart<- ggplot(sleep_health,
   theme_minimal(base_size = 14) +
   theme(legend.position = "none",plot.title = element_text(face = "bold")) # Remove legend and formats text
 
-# Save image
-ggsave("images/bmi_chart.png", width = 8, height = 6, dpi = 300)
+# Save image (edited from 6 to 5 for height testing)
+ggsave("images/bmi_chart.png", width = 8, height = 5, dpi = 300)
 
 # Frequency table for BMI Category on Updated Dataset
 bmi_ftable <- cbind(Frequency = table(sleep_health$BMI.Category),
@@ -129,3 +129,5 @@ table(sleep_health$BMI_grouped, sleep_health$Sleep.Disorder)
 chisq.test(sleep_health$BMI_grouped, sleep_health$Sleep.Disorder, correct = FALSE) 
 
 ##############################################################
+
+
