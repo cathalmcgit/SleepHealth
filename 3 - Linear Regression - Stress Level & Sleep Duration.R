@@ -10,25 +10,411 @@
 
 # Libraries used ----------------------------------------------------------
 library(tidyverse)
-library(dplyr)
 
 # Load updated Sleep Health dataset
 load('data/SleepHealth_Updated.rda')
 
-# Descriptive stats for stress level --------------------------------------
+# *** Descriptive stats for stress level --------------------------------------
+
+# Summary statistics
 summary(sleep_health$Stress.Level)
 
-# Descriptive stats for sleep duration --------------------------------------
+# Variance = 3.029
+var(sleep_health$Stress.Level)
+
+# Bar chart of stress level -----------------------------------------------
+# Using a bar chart as it is an ordinal rating scale
+# Shows it is not normally distributed
+
+ggplot(sleep_health, aes(x = factor(Stress.Level))) +
+  geom_bar(fill = "#1B9E77") +
+  labs(
+    x = "Self-reported Stress Level(1 = Low, 10 = High)",
+    y = "Number of participants",
+    title = "Distribution of self-reported Stress Level scores"
+  ) + 
+  theme_minimal(base_size = 14)
+
+# Save image
+ggsave("images/stress_level_chart.svg", width = 8, height = 6, dpi = 300)
+
+
+
+
+
+# *** Descriptive stats for sleep duration --------------------------------------
+
+# Summary statistics
 summary(sleep_health$Sleep.Duration)
 
+# Variance = 0.6011
+var(sleep_health$Sleep.Duration)
 
-##### Q3 possible input - Chihiro ###########
 
-# summary statistics of sleep duration variable 
-summary(sleep_health$Sleep.Duration) 
+# Histogram of sleep duration ---------------------------------------------
+# Shows it is not normally distributed
 
-# summary statistics of stress level variable 
-summary(sleep_health$Stress.Level) 
+ggplot(sleep_health, aes(x = Sleep.Duration)) +
+  geom_histogram(fill = "#7570B3", 
+                 colour = "white",
+                 binwidth = 0.25
+  ) +
+  labs(
+    x = "Sleep duration (hours)",
+    y = "Number of participants",
+    title = "Distribution of sleep duration"
+  ) + 
+  theme_minimal(base_size = 14)
+
+# Save image
+ggsave("images/sleep_duration_histogram.svg", width = 8, height = 6, dpi = 300)
+
+
+
+
+# *** Exploration of relationship of sleep duration and stress ------------
+
+# Scatterplot of sleep duration and stress level ---------------------------
+# Shows a linear trend of decreasing sleep duration with increased stress level
+
+ggplot(sleep_health, aes(x = Stress.Level, y = Sleep.Duration)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "Scatterplot of Sleep Duration and Stress",
+       x = "Stress Level (1 = Low, 10 = High)",
+       y = "Sleep Duration (hours)") +
+  theme_minimal(base_size = 14)
+
+# Save image
+ggsave("images/Q3/sleep_stress_scatter.svg", width = 8, height = 6, dpi = 300)
+
+
+
+# ** Testing for normality ---------------------------------------------------
+
+
+# QQ Plot for Sleep Duration ----------------------------------------------
+
+# Generate QQ plot using ggplot for Sleep Duration
+ggplot(sleep_health, aes(sample = Sleep.Duration)) +
+  stat_qq(size = 2) +
+  stat_qq_line(color = "#7570B3", linetype = "dashed", lwd = 1.1) +
+  labs(title = "Normal QQ Plot of Sleep Duration",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles") +
+  theme_minimal(base_size = 14)
+
+# Save image
+ggsave("images/Q3/sleep_duration_qqplot.svg", width = 8, height = 6, dpi = 300)
+
+# Plot shows that Sleep Duration has observations which depart from normality
+
+
+# Formal normality test - Shapiro-Wilk test -------------------------------
+# Using Shapiro-Wilk as it is a reliable test of normality for small to 
+# medium data sets.
+
+shapiro.test(sleep_health$Sleep.Duration)
+
+# This gives us a p-value of 0.0000368 which would suggest there is enough
+# evidence to reject the null hypothesis (data is normally distributed) and 
+# accept the alternative hypothesis that the sleep duration data significantly
+# departs from normality.
+
+
+# Calculating the initial correlation -------------------------------------
+# As the data is not normally distributed, but there appears to be a linear 
+# relationship and stress is ordinal data, Spearman Rank test will be used
+
+cor(sleep_health$Stress.Level, 
+    sleep_health$Sleep.Duration, 
+    method = "spearman")
+
+# Spearman Rank correlation = -0.8328656
+# Indicates a strong correlation as is close to -1
+
+
+
+# *** Potential confounders -----------------------------------------------
+
+# Age relationship with stress --------------------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health, 
+       aes(x = Age, y = Stress.Level)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Age and Stress Level",
+    x = "Age (years)",
+    y = "Stress Level (1–10)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Spearman Rank test for correllation 
+cor(sleep_health$Age, 
+    sleep_health$Stress.Level, 
+    method = "spearman")
+
+# Spearman Rank value: -0.382 suggests a moderate negative correlation with stress
+
+
+
+# Age relationship with Sleep Duration ------------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health, 
+       aes(x = Age, y = Sleep.Duration)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Age and Sleep Duration",
+    x = "Age (years)",
+    y = "Sleep Duration (hours)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Spearman Rank test for correllation 
+cor(sleep_health$Age, 
+    sleep_health$Sleep.Duration, 
+    method = "spearman")
+
+# Spearman Rank value: 0.312 suggests a moderate positive correlation with stress
+
+
+
+# Physical activity relationship with stress --------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health, 
+       aes(x = Physical.Activity.Level, y = Stress.Level)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Physical Activity and Stress Level",
+    x = "Physical Activity Level (mins per day)",
+    y = "Stress Level (1–10)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Spearman Rank test for correlation 
+cor(sleep_health$Physical.Activity.Level, 
+    sleep_health$Stress.Level, 
+    method = "spearman")
+
+# Spearman Rank value: -0.119 suggests a weak negative correlation with stress
+
+
+
+# Physical activity relationship with Sleep Duration ------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health, 
+       aes(x = Physical.Activity.Level, y = Sleep.Duration)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Physical Activity Level and Sleep Duration",
+    x = "Physical Activity Level (mins per day)",
+    y = "Sleep Duration (hours)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Spearman Rank test for correllation 
+cor(sleep_health$Physical.Activity.Level, 
+    sleep_health$Sleep.Duration, 
+    method = "spearman")
+
+# Spearman Rank value: 0.277 suggests a weak positive correlation with stress
+
+# Gender relationship with stress ------------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health,
+       aes(x = Gender, y = Stress.Level)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  labs(
+    title = "Stress Level by Gender",
+    x = "Gender",
+    y = "Stress Level (1 = Low, 10 = High)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Mann-Whitney U Test to compare sleeep duration by gender as not normally 
+# distributed
+wilcox.test(Stress.Level ~ Gender,
+            data = sleep_health,
+            conf.int = TRUE)
+
+# p-value < 0.001 - significant difference between males and females
+# females have a lower score of approximately 1 point
+
+# Gender relationship with sleep duration ------------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health,
+       aes(x = Gender, y = Sleep.Duration)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  labs(
+    title = "Sleep Duration by Gender",
+    x = "Gender",
+    y = "Sleep Duration (hours)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Mann-Whitney U Test to compare sleeep duration by gender as not normally 
+# distributed
+wilcox.test(Sleep.Duration ~ Gender,
+            data = sleep_health,
+            conf.int = TRUE)
+
+# p-value = 0.3328 - no significant difference between males and females
+
+
+
+# BMI relationship with stress ------------------------------------
+
+# Create a new combined variable 
+sleep_health$BMI_grouped <- ifelse(sleep_health$BMI.Category %in% c("Overweight", "Obese"), 
+                                   "Overweight/Obese", 
+                                   "Normal") 
+
+# Visualisation of the relationship
+ggplot(sleep_health,
+       aes(x = BMI.Category, y = Stress.Level)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  labs(
+    title = "Stress Level by BMI Category",
+    x = "BMI Category",
+    y = "Stress Level (1 = Low, 10 = High)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Median is higher in Overweight category than the other 2
+# Some variation in IQR - Overweight has greatest variation
+# There is a lot of overlap with the boxes - Median for Overweight is overlapped
+# by the Obese box, but not the Normal box. Unlikely to be a difference overall.
+
+# BMI Category relationship with sleep duration ------------------------------------
+
+# Visualisation of the relationship
+ggplot(sleep_health,
+       aes(x = BMI.Category, y = Sleep.Duration)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  labs(
+    title = "Sleep Duration by BMI Category",
+    x = "BMI Category",
+    y = "Sleep Duration (hours)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# There is greater differences among the medians
+# IQR is similar for Normal and Overweight indicating similar variation
+# There is no overlap of boxes for Normal and Overweight - limited number of
+# data points in the Obese section so not as conclusive.
+
+
+
+# *** Linear Regression ---------------------------------------------------
+
+
+# Fitting univariate models ----------------------------------------------
+
+
+# Stress model ------------------------------------------------------------
+uni_model_stress <- lm(Sleep.Duration ~ Stress.Level, data = sleep_health)
+
+# Summary of the fitted model
+summary(uni_model_stress)
+
+# Results indicate that when stress level is at 0, the predicted sleep duration
+# is 9.13 hours.
+# For every 1 unit increase in stress level, sleep duration will decrease by 
+# 0.37 hours.
+# There is a highly significant association between stress level and sleep
+# duration (p-value < 0.0001)
+
+
+# Age model ---------------------------------------------------------------
+uni_model_age <- lm(Sleep.Duration ~ Age, data = sleep_health)
+
+# Summary of the fitted model
+summary(uni_model_age)
+
+# Results indicate that when age is 0, the predicted sleep duration
+# is 5.82 hours.
+# For every 1 year increase in age, sleep duration will increase by 
+# 0.03 hours.
+# There is a highly significant association between age and sleep
+# duration (p-value < 0.0001)
+
+
+# Physical activity model -------------------------------------------------
+uni_model_activity <- lm(Sleep.Duration ~ Physical.Activity.Level, data = sleep_health)
+
+# Summary of the fitted model
+summary(uni_model_activity)
+
+# Results indicate that when activity level is 0, the predicted sleep duration
+# is 6.49 hours.
+# For every 1 minute increase in activity level, sleep duration will increase by 
+# 0.01 hours.
+# There is a significant association between age and sleep
+# duration (p-value = 0.0018)
+
+
+# Gender model ------------------------------------------------------------
+uni_model_gender <- lm(Sleep.Duration ~ Gender, data = sleep_health)
+
+# Summary of the fitted model
+summary(uni_model_gender)
+
+# Results indicate that for females, the predicted sleep duration
+# is 7.15 hours.
+# Males are likely to have 0.14 hours less sleep than females.
+# There is no significant difference between gender and sleep
+# duration (p-value = 0.311)
+
+
+# BMI model ---------------------------------------------------------------
+# changing bmi category to an un-ordered factor
+sleep_health <- sleep_health |>
+  mutate(
+    BMI.Category = factor(BMI.Category,
+                          ordered = FALSE)
+  )
+
+uni_model_bmi <- lm(Sleep.Duration ~ BMI.Category, data = sleep_health)
+
+# Summary of the fitted model
+summary(uni_model_bmi)
+
+# A normal BMI would predict a sleep duration of 7.34 hrs
+# An overweight BMI would predict a sleep duration of 0.60 hrs less than those
+# with a normal BMI which is significantly different (p-value < 0.0001)
+# An obese BMI would predict a sleep duration of 0.44 hrs less than those with
+# a normal BMI, but this is not a significant difference (p-value = 0.125)
+
+# Type III test to investigate if BMI variable has an overall impact on
+# sleep duration
+
+car::Anova(uni_model_bmi, type = "III")
+
+# BMI category has a Type III p-value < 0.0001 so has a highly significant 
+# association with sleep duration
+
+
+
+
+
+
+#*** Q3 possible input - Chihiro -------------------------
+
+
 
 # Creating sleep duration vs stress level category boxplot 
 n_levels <- length(unique(sleep_health$Stress.Level)) 
@@ -62,20 +448,6 @@ shapiro.test(sleep_health$Sleep.Duration)
 
 ###############################################################################
 
-# Bar chart of stress level -----------------------------------------------
-
-ggplot(sleep_health, aes(x = factor(Stress.Level))) +
-  geom_bar(fill = "steelblue") +
-  labs(
-    x = "Self-reported Stress Level(1 = Low, 10 = High)",
-    y = "Number of participants",
-    title = "Distribution of self-reported Stress Level scores"
-  ) + 
-  theme_minimal(base_size = 14)
-
-# Save image
-ggsave("images/stress_level_chart.svg", width = 8, height = 6, dpi = 300)
-
 
 
 # Histogram of sleep duration ---------------------------------------------
@@ -97,7 +469,7 @@ ggsave("images/sleep_duration_histogram.svg", width = 8, height = 6, dpi = 300)
 
 
 
-##### Christ's Linear Regression Code
+#******* Christ's Linear Regression Code ------------------------------
 
 load('data/SleepHealth_Updated.rda')
 
